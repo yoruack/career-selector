@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>职业重新选择器 · V0.3.2</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--text:#222;--muted:#74716b;--line:#e8e3d9;--accent:#5b5bd6;--soft:#f0efff;--danger:#c96868;--good:#4d8b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Noto Sans SC","Microsoft YaHei",sans-serif;line-height:1.7}
+button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.page{min-height:100vh;padding:48px 20px}.container{max-width:980px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:32px;box-shadow:0 12px 40px rgba(40,35,25,.05)}
+.hero{text-align:center;padding:72px 28px}.eyebrow{font-size:13px;letter-spacing:.14em;color:var(--muted);margin-bottom:14px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.15;margin:0 0 20px}h2{font-size:27px;margin:0 0 10px}h3{font-size:20px;margin:0 0 8px}p{margin:8px 0}.muted{color:var(--muted)}
+.primary{border:0;background:var(--text);color:white;border-radius:14px;padding:13px 22px;font-weight:700}.secondary{border:1px solid var(--line);background:white;border-radius:14px;padding:11px 18px}
+.button-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.progress{height:7px;background:#ece9e2;border-radius:99px;overflow:hidden;margin:18px 0 28px}.progress>div{height:100%;background:linear-gradient(90deg,var(--accent),#8b7cf6);transition:width .3s}
+.step-label{font-size:13px;color:var(--muted);margin-bottom:8px}.option-list{display:grid;gap:12px;margin-top:22px}.option{border:1px solid var(--line);background:white;border-radius:16px;padding:17px 18px;text-align:left;transition:.15s}.option:hover{border-color:#bbb5ff;transform:translateY(-1px)}.option.selected{border-color:var(--accent);background:var(--soft);box-shadow:0 0 0 3px rgba(91,91,214,.08)}
+.question-note{font-size:14px;color:var(--muted);margin-top:8px}.field{margin-top:20px}.field label{display:block;font-weight:700;margin-bottom:7px}
+textarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px 14px;background:white;outline:none;resize:vertical}textarea:focus{border-color:var(--accent)}
+.report-header{margin-bottom:36px}.report-intro{font-size:20px;line-height:1.8;margin:20px 0;color:#333}.section{margin-top:30px}.section-title{display:flex;gap:10px;align-items:baseline;margin-bottom:16px}.section-title .num{font-size:13px;color:var(--muted);letter-spacing:.12em}
+.profile-box{background:#faf9f5;border:1px solid var(--line);border-radius:18px;padding:20px}.score-list{display:grid;gap:14px}.score-item{padding:14px 0;border-bottom:1px solid var(--line)}.score-header{display:flex;justify-content:space-between;font-weight:700}
+.score-axis{position:relative;height:48px;margin-top:10px;padding-left:10px}.score-axis:before{content:"";position:absolute;left:10px;right:0;top:23px;height:1px;background:#d8d3c8}.score-bar-positive{position:absolute;left:10px;top:13px;height:20px;border-radius:7px;background:#6f6fdc;transition:width .35s ease}.score-ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding-left:10px;margin-top:2px}.asset-detail{margin:8px 0 2px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:#faf9f5}.asset-detail label{font-size:13px;font-weight:700;display:block;margin-bottom:5px}.asset-detail input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;outline:none}.asset-detail input:focus{border-color:var(--accent)}
+.direction-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}.direction-card{border:1px solid var(--line);border-radius:18px;padding:20px;background:white;display:flex;flex-direction:column;min-height:315px}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.tag{font-size:12px;background:#f1f0eb;padding:4px 8px;border-radius:999px;color:#5c5952}.direction-card .bottom{margin-top:auto;display:flex;justify-content:flex-end}.feasibility-btn{border:1px solid var(--text);background:white;border-radius:11px;padding:9px 13px;font-weight:700}
+.notice{background:#fff8e8;border:1px solid #f0dfb6;border-radius:15px;padding:14px 16px;font-size:14px}.modal{position:fixed;inset:0;background:rgba(20,18,15,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}.modal-card{background:white;max-width:820px;width:100%;max-height:88vh;overflow:auto;border-radius:22px;padding:28px}
+.feas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:18px 0}.feas-box{background:#faf9f5;border-radius:15px;padding:14px}.feas-box strong{display:block;font-size:18px}.plan{display:grid;gap:10px}.plan-item{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:white}.plan-item b{display:block;margin-bottom:4px}
+.footer-note{font-size:13px;color:var(--muted);margin-top:28px}.privacy-note{margin:22px auto 0;padding:12px 16px;border-radius:12px;background:#f4f0ff;color:#4d468f;font-size:13px;font-weight:700;max-width:720px}.intro-points{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0}.intro-point{background:#faf9f5;border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left}.intro-point strong{display:block;margin-bottom:5px}@media(max-width:700px){.intro-points{grid-template-columns:1fr}}@media(max-width:650px){.page{padding:25px 12px}.card{padding:22px}.hero{padding:48px 20px}.report-intro{font-size:17px}}
+</style>
+</head>
+<body>
+
+<div id="homePage" class="page"><div class="container"><div class="card hero">
+<div class="eyebrow">CAREER RE-CHOOSER · V0.3.2</div>
+<h1>职业重新选择器</h1>
+<p class="muted" style="max-width:680px;margin:0 auto">不是告诉你“你是什么职业类型”，而是把你的已有能力、现实条件、工作偏好和职业期待放在一起，寻找值得进一步验证的职业可能性。</p>
+<div class="button-row" style="justify-content:center"><button class="primary" onclick="startTest()">开始探索</button></div>
+<p class="footer-note">结果用于职业探索，不等同于职业咨询、招聘承诺或能力测评结论。</p>
+</div></div></div>
+
+<div id="introPage" class="page hidden"><div class="container"><div class="card hero" style="text-align:left;padding:48px 36px">
+<div class="eyebrow">开始之前 · 先了解这份测试</div>
+<h2 style="font-size:34px">这不是一次“测完就给你定职业”的测试</h2>
+<p class="report-intro" style="margin-bottom:8px">职业重新选择器会先了解你的现实起点，再了解你真正看重什么，最后把这些信息和不同职业的工作方式、进入门槛与转型成本放在一起比较。</p>
+<div class="intro-points">
+<div class="intro-point"><strong>① 现实起点</strong><span class="muted">了解你的学历、经历、已有能力和可以承受的调整空间。</span></div>
+<div class="intro-point"><strong>② 职业偏好</strong><span class="muted">通过一组情境题，了解你对工作内容、自由度、成长、收入、稳定和意义的重视程度。</span></div>
+<div class="intro-point"><strong>③ 职业探索</strong><span class="muted">综合前两部分，从更广的职业范围里筛选值得你进一步验证的方向。</span></div>
+</div>
+<div class="notice"><strong>你最后会得到什么？</strong><br>一份属于你的职业探索报告、若干可进一步了解的职业方向，以及针对每个方向的“可行性评估”，帮助你看清需要补什么、可以先做什么、以及怎样低成本验证。</div>
+<div class="privacy-note">🔒 你的回答仅用于生成本次职业探索结果。我们不会在报告中公开你的私人信息，也不会把你的回答当作公开内容展示。</div>
+<div class="button-row"><button class="primary" onclick="beginProfile()">我了解了，开始填写</button><button class="secondary" onclick="backHome()">先回首页</button></div>
+</div></div></div>
+
+<div id="profilePage" class="page hidden"><div class="container"><div class="card">
+<div class="step-label" id="profileStep">01 / 你的现实起点</div><div class="progress"><div id="profileProgress"></div></div>
+<h2 id="profileQuestion"></h2><p id="profileNote" class="question-note"></p><div id="profileOptions" class="option-list"></div>
+<div class="button-row"><button id="profileBack" class="secondary" onclick="profileBack()">上一步</button><button class="primary" onclick="profileNext()">下一步</button></div>
+</div></div></div>
+
+<div id="questionPage" class="page hidden"><div class="container"><div class="card">
+<div class="step-label" id="questionStep"></div><div class="progress"><div id="questionProgress"></div></div>
+<h2 id="questionText"></h2><p id="questionNote" class="question-note"></p><div id="options" class="option-list"></div>
+<div class="button-row"><button class="secondary" onclick="prevQuestion()">上一题</button><button class="primary" onclick="nextQuestion()">下一题</button></div>
+</div></div></div>
+
+<div id="resultPage" class="page hidden"><div class="container"><div class="card">
+<div class="report-header"><div class="eyebrow">CAREER RE-CHOOSER · REPORT</div><h1>你的职业重新选择报告</h1>
+<p class="report-intro">你不是在寻找一个“正确答案”。你是在寻找几个值得认真验证的方向。</p>
+<p class="muted">这份报告把你的现实起点、职业偏好、已有能力与现实顾虑放在一起考虑。职业方向不是结论，而是候选空间。</p></div>
+
+<div class="section"><div class="section-title"><span class="num">01</span><h2>你真正看重什么？</h2></div><div id="scores" class="score-list"></div></div>
+<div class="section"><div class="section-title"><span class="num">02</span><h2>你的职业选择画像</h2></div><div id="summary" class="profile-box"></div></div>
+<div class="section"><div class="section-title"><span class="num">03</span><h2>值得进一步探索的职业方向</h2></div>
+<p class="muted">推荐不是“你最适合什么”的判决，而是综合你的偏好、已有资产、学习成本和现实顾虑后，筛出的候选空间。</p><div id="directions" class="direction-grid"></div></div>
+<div class="section"><div class="notice"><strong>怎么使用？</strong><br>先挑 1–3 个你愿意实际验证的方向，再点进去做可行性评估。真正重要的不是“测得准不准”，而是它能不能把模糊想法变成下一步行动。</div></div>
+<div class="button-row"><button class="primary" onclick="restartTest()">再探索一次</button></div>
+</div></div></div>
+
+<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div class="modal-card">
+<div style="display:flex;justify-content:space-between;gap:20px;align-items:flex-start"><div><div class="eyebrow">FEASIBILITY CHECK</div><h2 id="modalTitle"></h2></div><button class="secondary" onclick="closeModal()">关闭</button></div>
+<div id="modalBody"></div></div></div>
+
+<script>
+const dimensions={
+ freedom:{name:"🕊️ 自主性",desc:"对工作方式、时间和决策拥有多大控制权。"},
+ growth:{name:"🌱 成长",desc:"持续学习、升级能力和面对新问题的需求。"},
+ interest:{name:"❤️ 兴趣",desc:"工作内容本身对你的吸引力。"},
+ money:{name:"💰 回报",desc:"收入、经济改善和长期财务空间的重要程度。"},
+ stability:{name:"🏠 稳定",desc:"对确定性、保障和可预测性的需求。"},
+ meaning:{name:"🤝 意义",desc:"希望工作解决真实问题、产生价值或影响的程度。"}
+};
+let scores={freedom:0,growth:0,interest:0,money:0,stability:0,meaning:0};
+let currentProfile=0,currentQuestion=0,profileAnswers={},questionAnswers=[];
+
+const profileQuestions=[
+{id:"stage",title:"你现在最接近哪种状态？",note:"没有好坏之分，选最接近你现实的一项。",options:[["student","在读学生 / 即将毕业"],["newgrad","毕业不久，工作经验较少"],["working","正在工作，希望调整方向"],["transition","离职 / 空档期，正在重新选择"],["experienced","已有多年工作经验，准备转型"],["other","其他 / 不确定"]]},
+{id:"degree",title:"你的学历或专业背景大致是什么？",note:"只需要告诉我们到“本科 / 硕士 + 专业领域”这一层，不需要填写学校等个人信息。",options:[["highschool","高中 / 中专 / 职高及以下"],["college","大专 / 高职"],["bachelor","本科"],["master","硕士及以上"],["other","其他 / 不确定"]]},
+{id:"experience",title:"你目前有哪些工作或实践经验？",note:"可以选择最接近的几项。选中后只需要补充一个关键词或大概方向，不需要写完整简历。",multi:true,options:[["none","目前几乎没有正式工作经验"],["office","办公室 / 企业职能类工作"],["business","销售 / 商务 / 客户相关"],["creative","内容 / 设计 / 媒体相关"],["tech","技术 / 数据 / 产品相关"],["education","教育 / 助人 / 服务相关"],["industry","制造 / 工程 / 现场类工作"],["other","其他工作或实践经历"]]},
+{id:"certificate",title:"你现在有可以继续利用的证书、资格或专业训练吗？",note:"没有也完全没关系。选择“有”后，只写名称即可，例如：英语六级、教师资格证、会计证、某项职业技能培训。",options:[["yes","有一些证书 / 资格 / 专业训练"],["no","目前没有特别相关的证书"],["unsure","有，但不确定对未来转型有没有用"]]},
+{id:"capabilities",title:"你目前比较有把握、可以带走的能力有哪些？",note:"可多选。这里更看重“你实际做过什么”，而不是你觉得自己是不是某种性格。",multi:true,options:[["writing","写作 / 表达"],["analysis","分析 / 数据 / 逻辑"],["people","沟通 / 访谈 / 理解他人"],["design","设计 / 审美 / 内容制作"],["tech","编程 / 软件 / 技术工具"],["sales","销售 / 谈判 / 商业沟通"],["organize","组织 / 推进 / 管理事情"],["teaching","教学 / 培训 / 讲解"],["hands","动手操作 / 实物制作"],["language","外语 / 跨文化沟通"]]},
+{id:"buffer",title:"如果未来需要一段职业调整期，你大概能给自己留出多长缓冲？",note:"不用填写金额。这里主要帮助我们判断推荐方向时，应该更偏向“尽快转入”还是“允许先投入一段时间”。",options:[["short","希望尽快恢复稳定收入"],["few","大约可以给自己留出 3–6 个月的调整空间"],["half","大约可以给自己留出 6–12 个月"],["long","目前有比较充足的缓冲，可以长期投入"]]},
+{id:"pressure",title:"你现在最担心重新选择职业时遇到什么问题？",note:"可多选。这个部分不会决定你的职业，而是帮助我们在推荐时考虑你的现实顾虑。",multi:true,options:[["money","担心收入和生活压力"],["time","担心学习周期太长"],["competition","担心行业竞争激烈"],["wrong","担心选错方向、再次浪费时间"],["stability","担心失去稳定和保障"],["age","担心年龄、空档期或简历变化"],["social","不希望工作长期处于高强度社交中"],["other","其他顾虑"]]},
+{id:"text",title:"如果愿意，再写一句你现在最想解决的职业问题。",note:"这是唯一一个开放题。可以很具体，也可以很混乱，例如“我不知道自己除了现在的工作还能做什么”。",text:true}
+];
+
+const questions=[
+{text:"如果一份工作收入不错，但工作内容非常重复，你会？",options:[["很难长期接受",{interest:2,growth:1}],["可以接受，只要收入稳定",{money:1,stability:2}],["看是否有晋升和学习空间",{growth:2,money:1}],["如果能自主安排节奏，我可以接受",{freedom:2}]]},
+{text:"当你想到未来 5 年，你更希望获得什么？",options:[["一项越来越值钱的专业能力",{growth:2,money:1}],["更大的自由和选择权",{freedom:2}],["稳定的生活和确定的收入",{stability:2,money:1}],["做一件我觉得有价值的事",{meaning:2,interest:1}]]},
+{text:"如果给你一个陌生问题，你更自然的反应是？",options:[["先找资料、拆问题、分析",{growth:1,interest:1}],["先和相关的人聊聊",{meaning:1,interest:1}],["直接动手做个原型试试",{freedom:1,growth:2}],["先观察整体，再想怎么优化",{interest:2,growth:1}]]},
+{text:"你更能接受哪种工作状态？",options:[["任务明确、流程稳定",{stability:2}],["目标明确，但方法自己决定",{freedom:2,growth:1}],["项目不断变化，每次解决不同问题",{interest:2,growth:1}],["长期深耕一个专业领域",{growth:2,stability:1}]]},
+{text:"如果一个机会很有潜力，但短期收入不确定，你会？",options:[["不会考虑，先保证收入",{stability:2,money:1}],["可以小成本试一试",{freedom:1,interest:1}],["只要长期空间足够大，可以投入",{growth:2,money:1}],["如果觉得有意义，我愿意承担一定风险",{meaning:2}]]},
+{text:"你希望工作中的人与人关系更接近哪一种？",options:[["独立完成大部分事情",{freedom:2}],["小团队深度合作",{growth:1,meaning:1}],["大量认识不同的人",{interest:2,meaning:1}],["稳定熟悉的团队",{stability:2}]]},
+{text:"如果必须在“高收入”和“高兴趣”之间做取舍，你更倾向？",options:[["高收入",{money:2}],["高兴趣",{interest:2}],["先选收入，再想办法提高兴趣",{money:1,stability:1}],["尽量寻找两者的交集",{money:1,interest:1}]]},
+{text:"你更希望自己的成果以什么方式被看见？",options:[["数据、指标、业绩",{money:2,growth:1}],["一个真正被人使用的产品 / 作品",{interest:2,meaning:1}],["解决了某个人或群体的问题",{meaning:2}],["自己能力明显提高了",{growth:2}]]},
+{text:"面对职业中的不确定性，你通常更接近？",options:[["希望尽量降低风险",{stability:2}],["可以接受，只要有成长空间",{growth:2}],["我反而会被新鲜感吸引",{interest:2,freedom:1}],["希望自己能控制风险，而不是完全回避",{freedom:2}]]},
+{text:"如果工作允许你选择工作时间，但收入波动明显，你会？",options:[["不太能接受",{stability:2}],["可以接受",{freedom:2}],["看长期收入上限",{money:2}],["只要工作内容喜欢就值得试",{interest:2}]]},
+{text:"你更希望解决哪一类问题？",options:[["让一个系统运行得更好",{growth:2,stability:1}],["让人的体验变得更好",{meaning:1,interest:2}],["创造新的东西",{interest:2,freedom:1}],["让一个商业目标实现",{money:2,growth:1}]]},
+{text:"如果未来出现一条完全不同的职业道路，你最希望它满足？",options:[["让我拥有更强的经济能力",{money:2}],["让我拥有更大的生活自由",{freedom:2}],["让我不断成长、不会停滞",{growth:2}],["让我觉得自己做的事情值得",{meaning:2,interest:1}]]},
+{text:"如果必须长期做一种工作，你更愿意？",options:[["不断接触新问题",{interest:2,growth:1}],["把一个专业做到很深",{growth:2}],["拥有稳定明确的生活边界",{stability:2}],["拥有较强的收入上限",{money:2,freedom:1}]]},
+{text:"你更希望工作给你的成就感来自哪里？",options:[["我变得更厉害了",{growth:2}],["我赚到了更多钱",{money:2}],["我做出了自己认可的东西",{interest:2}],["我确实帮助了别人",{meaning:2}]]},
+{text:"如果工作需要你持续学习新工具，你的感觉是？",options:[["挺有意思，我喜欢学新东西",{growth:2,interest:1}],["可以，但最好和实际工作直接相关",{growth:1}],["如果能提高收入，我愿意学",{money:2}],["希望工具变化不要太频繁",{stability:2}]]},
+{text:"面对一个没有明确答案的问题，你更容易？",options:[["享受探索过程",{interest:2}],["建立方法，一步步解决",{growth:2}],["先找别人验证，再推进",{meaning:1,stability:1}],["快速试错，看什么有效",{freedom:2,interest:1}]]},
+{text:"你对“工作之外还要学习/经营自己”这件事怎么看？",options:[["我希望工作本身就能让我成长",{growth:2}],["可以，只要未来自由度更高",{freedom:2}],["如果能提高收入值得",{money:2}],["最好工作和生活边界清楚",{stability:2}]]},
+{text:"如果一个职业需要你长期积累口碑、作品或客户，而不是一次考试就能进入，你会？",options:[["我喜欢这种长期积累",{growth:2,interest:1}],["只要最终回报值得，我可以接受",{money:2}],["会担心不确定性太高",{stability:2}],["如果能自己掌控积累方式，我愿意",{freedom:2}]]},
+{text:"你更喜欢哪种反馈？",options:[["明确的数据和结果",{money:1,growth:2}],["用户/客户直接告诉我感受",{meaning:1,interest:2}],["自己看到作品越来越好",{interest:2,growth:1}],["稳定明确的评价标准",{stability:2}]]},
+{text:"如果工作中出现冲突或谈判，你通常更愿意？",options:[["尽量避免高冲突环境",{stability:1,freedom:1}],["可以沟通，只要问题能解决",{growth:1,meaning:1}],["我不排斥谈判和争取结果",{money:2,freedom:1}],["我甚至喜欢复杂的人际博弈",{interest:2,money:1}]]},
+{text:"如果一个职业需要频繁面对陌生人，你的接受程度？",options:[["希望尽量少一些",{freedom:2}],["正常沟通没问题",{growth:1,meaning:1}],["可以，认识不同的人挺有意思",{interest:2,meaning:1}],["我希望工作本身就以人际互动为主",{meaning:2}]]},
+{text:"如果你做出的成果最终看不见自己的名字，你会在意吗？",options:[["不太在意，只要事情有价值",{meaning:2}],["比较在意，我希望作品有个人表达",{interest:2,freedom:1}],["只要收入和成长好就行",{money:2,growth:1}],["希望有明确的职位和成果归属",{stability:1,growth:1}]]},
+{text:"如果一条职业路径前两年比较辛苦，但之后专业壁垒明显提高，你会？",options:[["愿意长期积累",{growth:2}],["可以，只要未来收入空间足够",{money:2}],["我更希望尽快看到结果",{interest:1,freedom:1}],["不太愿意承担前期的不确定性",{stability:2}]]},
+{text:"如果让你选择一种“解决问题”的方式，你更偏向？",options:[["研究原因，找到规律",{growth:2}],["理解需求，找到人的真实问题",{meaning:1,interest:1}],["设计方案，把东西做出来",{freedom:1,interest:2}],["协调资源，让事情按计划发生",{money:1,growth:1,stability:1}]]}
+];
+
+const occupations=[
+["AI 应用 / AI 产品经理","科技·产品",["people","data","build","operate"],[4,5,4,5,3,3],["analysis","tech","organize","people"],4,6,5,"把用户问题、业务目标和技术能力变成可落地的产品。",["拆解一个真实 AI 产品并写需求文档","用 AI 工具做一个小型原型","找 3 个从业者了解真实工作"]],
+["软件开发工程师","科技·技术",["data","build"],[4,5,4,5,4,2],["tech","analysis"],5,9,5,"长期技术积累和解决抽象问题是核心。",["完成一个小型可运行项目","连续两周每天编码 60 分钟","对照真实 JD 找技能缺口"]],
+["数据分析师","科技·数据",["data","people"],[3,4,3,4,4,3],["analysis","writing"],3,5,5,"从数据中发现问题、解释规律并支持决策。",["完成一份公开数据分析报告","学习 SQL 基础","拆解 10 条数据分析 JD"]],
+["用户研究员","研究·体验",["people","data"],[3,4,5,3,3,4],["people","analysis","writing"],4,6,4,"通过访谈、研究设计和分析理解人的需求与行为。",["完成一次半结构访谈","做一份小型用户研究","向从业者了解工作日常"]],
+["UX/UI 设计师","设计·体验",["people","create","build"],[4,4,5,4,3,3],["design","people","writing"],4,7,5,"把用户需求、视觉表达和产品目标转化为体验。",["重做一个真实 App 页面","做一个 3 页作品集案例","获得一次设计反馈"]],
+["产品运营","商业·运营",["people","data","operate"],[3,4,4,4,3,3],["writing","analysis","organize","people"],3,4,4,"在用户、内容、数据和业务之间试错并推动落地。",["分析一个产品的增长路径","设计一次小型增长实验","拆解 10 个运营 JD"]],
+["市场研究 / 商业研究","研究·商业",["people","data"],[3,4,4,4,3,3],["analysis","writing","people"],3,4,4,"用资料、访谈和数据理解市场与消费者。",["完成一个行业研究报告","做 5 次访谈并归纳主题","用公开数据回答一个商业问题"]],
+["咨询顾问","商业·咨询",["people","data","operate"],[2,5,4,5,2,3],["analysis","writing","people","organize"],5,5,2,"问题变化快、学习密度高，需要分析和高强度沟通。",["练习 3 个 case","完成一份结构化行业分析","体验高强度项目节奏"]],
+["销售 / 大客户经理","商业·销售",["people","operate"],[4,4,4,5,2,2],["sales","people","organize"],2,3,2,"结果导向、沟通谈判密集，收入弹性通常较大。",["尝试一次陌生客户沟通","学习基础销售流程","体验业绩压力"]],
+["外贸 / 国际业务","商业·国际",["people","operate"],[3,4,4,4,3,2],["language","sales","people","organize"],3,4,4,"结合语言、跨文化沟通、商务谈判与供应链。",["模拟开发海外客户","学习询盘报价","完成一次英文商务沟通"]],
+["人力资源 / HR","商业·组织",["people","operate"],[3,3,3,3,4,4],["people","organize","writing"],2,3,3,"围绕招聘、人才发展、组织沟通和员工关系。",["了解三个 HR 模块","做一次岗位画像","和 HR 从业者交流"]],
+["教师 / 培训师","教育·助人",["people","create"],[3,4,4,3,4,5],["teaching","people","writing"],4,6,3,"把知识转化成学习体验，价值感常来自他人成长。",["做一次 30 分钟试讲","设计一节课程","观察自己是否享受持续讲解"]],
+["教研 / 课程设计","教育·内容",["people","data","create"],[3,4,4,3,4,4],["teaching","writing","analysis"],3,5,4,"介于教育、研究和内容设计之间。",["设计一个微型课程","分析一个课程产品","做学习目标—内容—评价设计"]],
+["心理相关助人工作","助人·心理",["people"],[3,4,4,3,2,5],["people","writing"],5,9,4,"直接面对人的体验、行为与成长，专业训练和伦理边界重要。",["了解当地准入要求","旁听专业课程","了解情绪劳动的真实强度"]],
+["内容编辑 / 文案","内容·创意",["create","people"],[4,3,5,3,2,3],["writing","language"],2,3,5,"通过文字和信息整理创造传播价值。",["完成 3 篇不同类型内容","拆解优秀内容结构","为真实品牌做内容方案"]],
+["视频 / 视觉内容创作者","内容·创意",["create","people"],[5,4,5,4,1,3],["design","writing"],3,5,5,"自主性和创造空间大，但收入稳定性差异很大。",["连续发布 4 条作品","测试一个明确主题","记录制作成本与反馈"]],
+["平面设计师","设计·创意",["create"],[4,3,5,3,2,3],["design"],3,6,5,"视觉表达与商业传播结合，作品积累重要。",["完成 3 个模拟商业项目","建立小型作品集","获得一次设计反馈"]],
+["建筑 / 空间设计","设计·工程",["create","build"],[3,4,5,3,3,4],["design","organize"],5,9,2,"结合审美、空间、技术和项目约束。",["做一个空间改造方案","了解专业软件","访谈一名从业者"]],
+["工业设计","设计·产品",["create","build","people"],[4,4,5,3,3,4],["design","people","hands"],4,7,3,"围绕产品、用户、材料和制造约束创造。",["做一个产品改造案例","学习基础建模","了解从设计到量产流程"]],
+["财务 / 会计","商业·专业",["data","operate"],[2,4,2,4,5,2],["analysis","organize"],3,4,4,"规则和专业性较强，稳定性通常较高。",["做基础财务练习","了解企业财务岗位层级","对照真实 JD"]],
+["审计 / 风控","商业·专业",["data","operate"],[2,4,3,4,4,3],["analysis","organize"],4,5,3,"通过分析和规则判断降低组织风险。",["学习基础审计流程","做一次风险清单","体验细节检查任务"]],
+["法务 / 合规","法律·专业",["data","people"],[2,4,3,4,4,4],["writing","analysis","people"],5,9,3,"大量阅读、分析、写作和风险判断。",["阅读真实合同并标风险","了解法务与律师区别","访谈法律从业者"]],
+["律师","法律·专业",["people","data"],[3,5,4,5,2,4],["writing","analysis","people"],5,10,2,"专业训练、复杂问题分析和沟通密集。",["旁听公开法律课程","完成案例分析","了解当地执业资格要求"]],
+["供应链 / 采购","运营·供应链",["operate","people","data"],[3,4,3,4,4,3],["organize","analysis","sales"],3,4,2,"协调供应商、成本、库存、交付和业务目标。",["拆解商品供应链","模拟供应商比价","了解采购与供应链区别"]],
+["物流 / 运输管理","运营·供应链",["operate","data"],[2,3,3,3,4,3],["organize","analysis"],2,3,2,"流程、资源调度和现场问题解决。",["分析一次物流流程","了解仓储/运输/计划岗位","体验排程任务"]],
+["机械工程师","工程·制造",["build","hands","data"],[2,4,4,4,5,3],["analysis","hands"],5,8,2,"工程原理、设计、制造与现场问题解决结合。",["学习 CAD 基础","做机械结构练习","了解真实工程流程"]],
+["电气 / 自动化工程师","工程·制造",["build","data","hands"],[2,5,4,4,5,3],["tech","analysis","hands"],5,9,2,"技术知识、系统思维和现场调试能力结合。",["学习基础电路或 PLC","了解自动化项目流程","寻找工程案例"]],
+["质量工程师","工程·制造",["data","operate","hands"],[2,3,3,3,5,3],["analysis","organize"],3,4,1,"围绕标准、流程、质量问题和持续改进。",["学习质量管理基础","做一次流程问题分析","了解制造业质量岗位"]],
+["护理","医疗·健康",["people","hands"],[1,4,3,3,5,5],["people","hands","organize"],5,9,1,"人与现场工作占比高，稳定与意义可能较强，但轮班和专业门槛要认真考虑。",["了解当地护理准入","访谈护士","了解轮班和工作强度"]],
+["康复治疗","医疗·健康",["people","hands"],[2,4,4,3,4,5],["people","hands","teaching"],5,9,1,"通过训练和长期干预帮助人恢复功能。",["了解专业课程","观察康复机构工作","学习基础人体与运动知识"]],
+["实验室 / 科研助理","研究·科学",["data","hands"],[3,5,4,2,3,5],["analysis","hands"],5,9,1,"适合喜欢深入问题、实验和专业积累的人。",["阅读一篇领域论文","了解实验流程","寻找科研助理岗位要求"]],
+["公共政策 / 政策研究","公共事务·研究",["data","people"],[2,4,4,3,4,5],["analysis","writing"],4,6,3,"通过资料、数据和政策分析理解社会问题。",["选择一个政策议题写分析","阅读政策文本","了解研究机构岗位要求"]],
+["社工","公共事务·助人",["people","operate"],[2,3,4,2,3,5],["people","organize","writing"],3,4,1,"直接面对个人和社区问题，意义感较强，但情绪劳动需要了解。",["了解当地岗位","参与一次志愿服务","和一线社工交流"]],
+["活动策划 / 会展","内容·运营",["people","create","operate"],[3,4,5,3,2,3],["organize","people","design"],2,3,2,"项目变化快、沟通密度高，适合喜欢现场和组织的人。",["策划一次小型活动","复盘预算和流程","体验高沟通密度项目"]],
+["摄影 / 摄像","创意·影像",["create","people"],[5,4,5,3,1,3],["design"],3,5,4,"创作自主性高，但商业化和稳定性差异大。",["完成 3 个主题拍摄","接一个小型真实需求","计算时间成本与报价"]],
+["独立开发 / 数字产品","创业·数字",["build","create","data"],[5,5,5,5,1,3],["tech","writing","design"],5,8,5,"自主性和上限高，但风险高，需要产品、技术、营销或资源组合。",["做一个能运行的微型产品","让 5 个真实用户试用","做一次小额付费验证"]],
+["跨境电商","商业·国际",["people","data","operate","create"],[4,4,4,5,2,2],["language","sales","analysis","organize"],3,5,5,"结合选品、内容、投放、供应链和国际市场。",["研究一个细分品类","做竞品与关键词分析","模拟商品完整销售链路"]],
+["汽车维修 / 技术服务","技术·现场",["hands","people"],[3,4,4,4,4,3],["hands","organize"],3,6,1,"以设备和具体问题为对象，技能可积累。",["参观维修门店","了解培训路径","学习基础工具与故障知识"]],
+["厨师 / 餐饮专业","服务·技能",["hands","create","people"],[3,4,5,3,2,4],["hands","organize"],2,5,0,"创造性和技能积累明显，但工作节奏和身体强度要考虑。",["厨房连续实践","了解餐饮岗位","计算时间与收入结构"]],
+["美容 / 美发 / 形象服务","服务·技能",["people","hands","create"],[4,4,5,4,2,4],["people","hands","design"],2,5,0,"人与人互动、审美和手艺结合，可形成个人客户资产。",["跟从业者观察一天","学习基础技能","了解客源与收入结构"]],
+["项目经理 / 项目管理","商业·管理",["people","operate","data"],[3,5,4,4,4,3],["organize","people","analysis"],4,5,3,"协调目标、时间、资源和不同角色，适合推动复杂事情的人。",["用看板管理真实项目","复盘项目风险","阅读 10 条 PM JD"]],
+["招聘顾问 / 猎头","商业·人才",["people","operate"],[4,4,4,5,2,3],["people","sales","writing"],2,3,3,"人与岗位匹配、销售和关系维护结合，收入弹性较大。",["模拟候选人寻访","拆解招聘流程","体验沟通密集的一天"]],
+["翻译 / 本地化","语言·内容",["people","create"],[4,3,4,3,2,3],["language","writing"],3,5,5,"语言与专业领域结合后更有竞争力，远程可能性较高。",["完成专业文本翻译","比较机器翻译与人工后编辑","寻找细分领域"]],
+["行政 / 综合职能","商业·职能",["operate","people"],[2,2,2,2,5,2],["organize","writing","people"],1,2,2,"流程和组织支持类工作，进入门槛相对低，稳定性较强但成长取决于岗位。",["了解目标岗位具体工作","比较行业与公司差异","列出 3 年晋升路径"]]
+].map(x=>({name:x[0],cat:x[1],work:x[2],vals:Object.fromEntries(Object.keys(dimensions).map((k,i)=>[k,x[3][i]])),skills:x[4],barrier:x[5],learn:x[6],remote:x[7],why:x[8],verify:x[9]}));
+
+
+function resetScores(){Object.keys(scores).forEach(k=>scores[k]=0)}
+
+function startTest(){
+ document.getElementById("homePage").classList.add("hidden");
+ document.getElementById("introPage").classList.remove("hidden");
+ currentProfile=0;profileAnswers={};currentQuestion=0;questionAnswers=[];resetScores();
+}
+
+function beginProfile(){
+ document.getElementById("introPage").classList.add("hidden");
+ document.getElementById("profilePage").classList.remove("hidden");
+ showProfileQuestion();
+}
+
+function backHome(){document.getElementById("introPage").classList.add("hidden");document.getElementById("homePage").classList.remove("hidden")}
+function restartTest(){closeModal();document.getElementById("resultPage").classList.add("hidden");startTest()}
+
+function renderProfileOptions(q){
+ const c=document.getElementById("profileOptions");
+ c.innerHTML="";
+ if(q.text){
+   const ta=document.createElement("textarea");
+   ta.rows=6;ta.placeholder="例如：我现在最想解决的是……";
+   ta.value=profileAnswers[q.id]||"";
+   ta.oninput=()=>profileAnswers[q.id]=ta.value;
+   c.appendChild(ta);
+   return;
+ }
+ const selected=profileAnswers[q.id]||[];
+ q.options.forEach(([v,label])=>{
+   const b=document.createElement("button");
+   const is=q.multi?selected.includes(v):selected===v;
+   b.className="option"+(is?" selected":"");
+   b.innerHTML=`<strong>${label}</strong>`;
+   b.onclick=()=>{
+     if(q.multi){
+       let arr=Array.isArray(profileAnswers[q.id])?[...profileAnswers[q.id]]:[];
+       if(v==="none") arr=["none"];
+       else {arr=arr.filter(x=>x!=="none");arr=arr.includes(v)?arr.filter(x=>x!==v):[...arr,v]}
+       profileAnswers[q.id]=arr;
+     }else profileAnswers[q.id]=v;
+     renderProfileOptions(q);
+   };
+   c.appendChild(b);
+ });
+ renderAssetDetails(q,c);
+}
+
+function renderAssetDetails(q,c){
+ const selected=q.multi?(profileAnswers[q.id]||[]):[];
+ const detailMap={
+   experience:["experienceDetail","大概是什么工作 / 行业？","例如：教育、互联网、电商、制造、餐饮、行政等，写几个关键词就够了。"],
+   certificate:["certificateDetail","证书 / 资格 / 专业训练名称","例如：英语六级、教师资格证、会计证、某项职业技能培训。"]
+ };
+ if(q.id==="experience" && selected.length && !selected.includes("none")) addDetail(c,"experienceDetail","大概是什么工作 / 行业？","例如：教育、互联网、电商、制造、餐饮、行政等，写几个关键词就够了。", "textarea");
+ if(q.id==="certificate" && (profileAnswers.certificate==="yes"||profileAnswers.certificate==="unsure")) addDetail(c,"certificateDetail","证书 / 资格 / 专业训练名称","例如：英语六级、教师资格证、会计证、某项职业技能培训。", "input");
+ if(q.id==="experience" && selected.includes("other")) addDetail(c,"otherExperienceDetail","其他经历补充","简单写关键词即可，不需要完整描述。", "textarea");
+ if(q.id==="pressure" && selected.includes("other")) addDetail(c,"otherPressureDetail","其他顾虑","你最担心但上面没有列出的事情。", "input");
+}
+
+function addDetail(container,key,label,placeholder,type="input"){
+ const wrap=document.createElement("div");wrap.className="asset-detail";
+ const lab=document.createElement("label");lab.textContent=label;wrap.appendChild(lab);
+ const input=document.createElement(type==="textarea"?"textarea":"input");
+ if(type==="textarea") input.rows=2; else input.type="text";
+ input.placeholder=placeholder;input.value=profileAnswers[key]||"";
+ input.oninput=()=>profileAnswers[key]=input.value;wrap.appendChild(input);container.appendChild(wrap);
+}
+
+function showProfileQuestion(){
+ const q=profileQuestions[currentProfile];
+ document.getElementById("profileStep").textContent=`01 / 你的现实起点 · ${currentProfile+1} / ${profileQuestions.length}`;
+ document.getElementById("profileProgress").style.width=((currentProfile+1)/profileQuestions.length*100)+"%";
+ document.getElementById("profileQuestion").textContent=q.title;
+ document.getElementById("profileNote").textContent=q.note||"";
+ document.getElementById("profileBack").style.visibility=currentProfile===0?"hidden":"visible";
+ renderProfileOptions(q);
+}
+
+function profileNext(){
+ const q=profileQuestions[currentProfile],v=profileAnswers[q.id];
+ if(q.text){if(!v||!v.trim()){alert("可以先写一句，这一项没有标准答案。");return}}
+ else if(!v||(Array.isArray(v)&&v.length===0)){alert("请先完成这一题。");return}
+ if(currentProfile<profileQuestions.length-1){currentProfile++;showProfileQuestion()}
+ else{document.getElementById("profilePage").classList.add("hidden");document.getElementById("questionPage").classList.remove("hidden");currentQuestion=0;questionAnswers=[];showQuestion()}
+}
+
+function profileBack(){if(currentProfile>0){currentProfile--;showProfileQuestion()}}
+
+function showQuestion(){
+ const q=questions[currentQuestion];
+ document.getElementById("questionStep").textContent=`02 / 职业偏好 · ${currentQuestion+1} / ${questions.length}`;
+ document.getElementById("questionProgress").style.width=((currentQuestion+1)/questions.length*100)+"%";
+ document.getElementById("questionText").textContent=q.text;
+ document.getElementById("questionNote").textContent="选择最接近你真实反应的一项，没有正确答案。";
+ const c=document.getElementById("options");c.innerHTML="";
+ q.options.forEach((o,i)=>{
+   const b=document.createElement("button");b.className="option"+(questionAnswers[currentQuestion]===i?" selected":"");
+   b.innerHTML=`<strong>${o[0]}</strong>`;
+   b.onclick=()=>{questionAnswers[currentQuestion]=i;[...c.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")};
+   c.appendChild(b);
+ });
+}
+
+function calculateScores(){
+ resetScores();
+ questionAnswers.forEach((ans,i)=>{
+   if(ans===undefined)return;
+   Object.entries(questions[i].options[ans][1]).forEach(([k,v])=>scores[k]+=Math.max(0,v));
+ });
+}
+
+function nextQuestion(){
+ if(questionAnswers[currentQuestion]===undefined){alert("先选择一个答案，再继续。");return}
+ if(currentQuestion<questions.length-1){currentQuestion++;showQuestion()}
+ else{calculateScores();showResult()}
+}
+function prevQuestion(){if(currentQuestion>0){currentQuestion--;showQuestion()}}
+
+function renderScores(){
+ const keys=Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);
+ const max=Math.max(1,...Object.values(scores));
+ const c=document.getElementById("scores");c.innerHTML="";
+ keys.forEach(k=>{
+   const v=Math.max(0,scores[k]);
+   const pct=(v/max)*100;
+   const item=document.createElement("div");item.className="score-item";
+   item.innerHTML=`
+    <div class="score-header"><span>${dimensions[k].name}</span><span>${v}</span></div>
+    <div class="score-axis"><div class="score-bar-positive" style="width:${pct}%"></div></div>
+    <div class="score-ticks"><span>0</span><span>${Math.round(max/2)}</span><span>${max}</span></div>
+    <div class="muted" style="font-size:13px;margin-top:5px">${dimensions[k].desc}</div>`;
+   c.appendChild(item);
+ });
+ return keys;
+}
+
+function buildSummary(sorted){
+ const a=sorted[0],b=sorted[1];
+ const names={interest:"对工作内容本身的兴趣",growth:"持续成长",freedom:"自主空间",money:"现实回报",stability:"稳定与确定性",meaning:"价值感与意义"};
+ const pair={
+ "interest-growth":["你对工作的要求并不只是“有一份工作”。你更在意做的事情本身有没有吸引力，同时又希望自己在几年之后回头看时，确实比现在更有能力。","这意味着你可能比较难长期接受只有重复执行、却没有学习空间的工作；但另一方面，单纯追求新鲜感也未必能让你满足。对你来说，一个值得认真考察的方向，往往需要同时提供‘我愿意做’和‘我做久了会越来越值钱’这两种感觉。"],
+ "freedom-interest":["你比较看重自己怎么工作，也比较在意工作内容本身是否让你愿意投入。你可能并不只是想换一个职位名称，而是希望换一种更符合自己节奏的工作方式。","因此，职业选择时你可能会特别在意自主安排、工作方法、任务变化和个人表达。但真正适合你的方向不能只有自由，还需要有可以积累的能力和能够维持生活的收入来源，否则自由本身很容易变成另一种压力。"],
+ "money-growth":["你同时把现实回报和长期成长放在比较重要的位置。对你而言，一份工作不能只解决今天的收入问题，也需要回答一个更现实的问题：做几年以后，我手里是不是多了一项更值钱、更难替代的能力。","所以你可能更适合认真比较‘短期收入、长期上限、学习成本、能力积累’之间的关系，而不是只看某个职业现在的平均薪资。"],
+ "stability-money":["你对职业的期待里，有比较明确的现实保障需求。收入是否可预测、职业路径是否容易理解、失业或转型风险有多大，都会明显影响你是否愿意尝试一个方向。","这并不意味着你不能改变职业。相反，对你来说更重要的是设计一种‘有退路的探索’：先保住基本生活，再用小规模的学习、项目或兼职验证新方向，而不是一次性把所有筹码压上去。"],
+ "meaning-growth":["你比较在意自己有没有真正成长，也希望这种成长最终能解决一些真实的问题。单纯为了升职、涨薪而不断堆积技能，可能并不能长期满足你。","你更值得关注的，是那些既能让你持续学习，又能让你看到工作对象、用户或社会问题的方向。不过这类职业也需要面对现实：有意义感不一定等于高收入，因此最好同时核对进入成本和长期回报。"],
+ "meaning-interest":["你很在意‘我愿不愿意做’和‘这件事值不值得做’。这两个条件同时出现，说明你可能不太容易仅仅因为薪资或职位名称就长期坚持一份工作。","但兴趣和意义都比较主观，所以真正选择职业时，最好不要只凭想象判断。你需要通过真实任务去验证：做这件事的过程是否让你愿意继续，以及你是否愿意接受它背后的重复、压力、客户需求和现实限制。"]
+ };
+ const key=`${a}-${b}`; const text=pair[key]||pair[`${b}-${a}`];
+ if(text) return `<p>${text[0]}</p><p>${text[1]}</p><p class="muted">目前最明显的两个倾向是<strong>${names[a]}</strong>与<strong>${names[b]}</strong>。它们不是对你的性格定型，而是这次测试里更值得拿来筛选职业的两个条件。最终方向还会结合你的现实起点和已有能力。</p>`;
+ return `<p>你的职业偏好没有集中在单一维度，这其实意味着你的选择空间并不小。你目前更明显地看重<strong>${names[a]}</strong>和<strong>${names[b]}</strong>，但它们之间并没有形成一个非常单一的职业指向。</p><p>与其急着找一个“最适合”的答案，你更适合把这份结果当作筛选条件：先排除明显不符合你现实要求的工作，再从剩下的方向中挑几个进行真实体验。尤其要注意，兴趣、收入、稳定、自主和意义往往很难同时达到最高，真正的选择通常发生在它们之间的取舍上。</p><p class="muted">目前最明显的两个倾向是<strong>${names[a]}</strong>与<strong>${names[b]}</strong>。后面的职业推荐会继续结合你的已有能力、学习缓冲和现实顾虑。</p>`;
+}
+
+function matchOccupations(){
+ const assets=[].concat(profileAnswers.capabilities||[]);
+ const concerns=profileAnswers.pressure||[],learning=profileAnswers.buffer==="short"?"low":profileAnswers.buffer==="few"?"mid":profileAnswers.buffer==="half"?"high":"long",income=profileAnswers.buffer==="short"?"zero":profileAnswers.buffer==="few"?"small":profileAnswers.buffer==="half"?"medium":"large";
+ const maxScore=Math.max(1,...Object.values(scores));
+ return occupations.map(o=>{
+   let score=0;
+   Object.keys(dimensions).forEach(k=>{
+     const user=scores[k]/maxScore;
+     const fit=o.vals[k]/5;
+     score+=user*(1-Math.abs(user-fit))*20;
+   });
+   const hits=assets.filter(x=>o.skills.includes(x)).length;
+   score+=hits*5;
+   if(learning==="low")score+=Math.max(0,6-o.learn)*3;
+   if(learning==="long")score+=o.learn*1.2;
+   if(income==="zero")score+=o.vals.stability*2.5;
+   if(income==="large")score+=o.vals.freedom+o.vals.growth;
+   if(profileAnswers.experience&&profileAnswers.experience.includes("tech")&&o.skills.includes("tech"))score+=5;
+   if(profileAnswers.experience&&profileAnswers.experience.includes("business")&&o.skills.includes("sales"))score+=4;
+   if(profileAnswers.experience&&profileAnswers.experience.includes("creative")&&o.skills.includes("design"))score+=4;
+   if(profileAnswers.experience&&profileAnswers.experience.includes("education")&&o.skills.includes("teaching"))score+=4;
+   if(profileAnswers.experience&&profileAnswers.experience.includes("industry")&&o.skills.includes("hands"))score+=4;
+   if(profileAnswers.experience&&profileAnswers.experience.includes("office")&&o.skills.includes("organize"))score+=3;
+   if(concerns.includes("time")&&o.learn>=7)score-=7;
+   if(concerns.includes("stability")&&o.vals.stability<=2)score-=7;
+   if(concerns.includes("social")&&o.work.includes("people"))score-=5;
+   if(profileAnswers.transfer==="adjacent"&&o.learn>=8)score-=5;
+   return {...o,match:score,skillHits:hits};
+ }).sort((a,b)=>b.match-a.match);
+}
+
+function showResult(){
+ document.getElementById("questionPage").classList.add("hidden");
+ document.getElementById("resultPage").classList.remove("hidden");
+ const sorted=renderScores();
+ document.getElementById("summary").innerHTML=buildSummary(sorted);
+ const dirs=matchOccupations().slice(0,8),c=document.getElementById("directions");c.innerHTML="";
+ dirs.forEach((o,i)=>{
+   const d=document.createElement("div");d.className="direction-card";
+   d.innerHTML=`
+    <div>
+      <div class="eyebrow">方向 ${String(i+1).padStart(2,"0")}</div>
+      <h3>${escapeHtml(o.name)}</h3>
+      <div class="tags"><span class="tag">${escapeHtml(o.cat)}</span><span class="tag">学习 ${o.learn<=3?"短":o.learn<=6?"中":"长"}</span><span class="tag">门槛 ${o.barrier<=2?"低":o.barrier<=4?"中":"高"}</span></div>
+      <p>${escapeHtml(o.why)}</p>
+      <p class="muted" style="font-size:13px">已有能力/工作偏好命中 ${o.skillHits} 项；同时考虑了学习成本、现实顾虑与职业偏好。</p>
+    </div>
+    <div class="bottom"><button class="feasibility-btn">可行性评估</button></div>`;
+   d.querySelector(".feasibility-btn").addEventListener("click",()=>openFeasibility(o.name));
+   c.appendChild(d);
+ });
+}
+
+function openFeasibility(name){
+ const o=occupations.find(x=>x.name===name);if(!o)return;
+ const assets=[].concat(profileAnswers.capabilities||[]);
+ const hits=assets.filter(x=>o.skills.includes(x)),missing=o.skills.filter(x=>!assets.includes(x));
+ const learningMap={low:"你希望尽快进入求职，因此优先做低成本验证，不建议一开始投入高额训练。",mid:"你可以接受几个月过渡，适合边学边做，边积累真实经历。",high:"你可以投入更长的训练周期，适合系统补齐核心能力。",long:"你愿意长期投入，可以考虑完整训练路径，而不是只追求快速入门。"};
+ const cashMap={zero:"现金流约束较强：优先相关岗位、实习、项目或内部转型，不建议贸然断收入。",small:"可以承受有限收入波动，适合边工作边积累新能力。",medium:"可以承担一定转换成本，但应设时间和资金止损点。",large:"有较大试错空间，可以用更长周期验证职业方向。"};
+ const stageMap={student:"可以优先通过课程项目、实习和作品集验证。",newgrad:"重点是补齐岗位技能并获得第一段相关经历。",working:"优先考虑内部项目、转岗或业余验证，降低裸辞式试错。",transition:"可以把空档期变成结构化验证期，同时保持现金流与求职节奏。",experienced:"已有工作经验本身就是资产，优先寻找可迁移能力，而非完全从零开始。"};
+ const assetDetails=[
+   ["学历 / 专业",profileAnswers.degree],
+   ["工作 / 实践经历",profileAnswers.experienceDetail],
+   ["证书 / 资格",profileAnswers.certificateDetail],
+   ["已有能力",(profileAnswers.capabilities||[]).join("、")],
+   ["职业调整缓冲",({short:"希望尽快恢复稳定收入",few:"约 3–6 个月",half:"约 6–12 个月",long:"较充足"}[profileAnswers.buffer]||"")]
+ ].filter(x=>x[1]);
+ const detailHtml=assetDetails.length?`<ul>${assetDetails.map(x=>`<li><strong>${escapeHtml(x[0])}：</strong>${escapeHtml(x[1])}</li>`).join("")}</ul>`:"<p>目前没有填写具体资产细节。你可以把它理解为一个提醒：真正做职业转换时，具体资产往往比“我有什么能力”的标签更有价值。</p>";
+ document.getElementById("modalTitle").textContent=o.name+" · 可行性评估";
+ document.getElementById("modalBody").innerHTML=`
+  <p>${escapeHtml(o.why)}</p>
+  <div class="feas-grid">
+   <div class="feas-box"><span class="muted">进入门槛</span><strong>${o.barrier<=2?"较低":o.barrier<=4?"中等":"较高"}</strong></div>
+   <div class="feas-box"><span class="muted">学习投入</span><strong>${o.learn<=3?"1–3个月":o.learn<=6?"3–6个月":"6–12个月+"}</strong></div>
+   <div class="feas-box"><span class="muted">远程可能性</span><strong>${o.remote>=4?"较高":o.remote>=2?"视岗位而定":"较低"}</strong></div>
+  </div>
+  <div class="section"><h3>结论</h3><p>${hits.length?`从你填写的信息来看，你已经有 <strong>${hits.join("、")}</strong> 这些可以迁移到这个方向的基础，所以不一定需要从零开始。`:`从你目前填写的信息来看，和这个方向直接对应的经验还比较少，因此更适合先接触、先体验，再决定是否投入更多。`}</p><p>${missing.length?`如果之后想继续了解，比较值得优先补的是 <strong>${missing.slice(0,3).join("、")}</strong>。不需要一次把所有能力都补齐。`:`目前已有基础和这个方向有一定衔接，接下来更重要的是把已有能力放进真实任务里试一试。`}</p></div>
+  <div class="section"><h3>可以先试试这些</h3><div class="plan">${o.verify.slice(0,3).map(x=>`<div class="plan-item"><b>${escapeHtml(x)}</b><span>先做一个小规模尝试就可以，不需要一开始就把它当成正式转行。做完之后，感受一下自己对过程、难点和结果的接受程度。</span></div>`).join("")}</div></div>
+  <div class="section"><h3>结合你现在的情况</h3><p>${stageMap[profileAnswers.stage]||"可以结合自己的当前状态，慢慢安排尝试的节奏。"}</p><p>${learningMap[profileAnswers.buffer==="short"?"low":profileAnswers.buffer==="few"?"mid":profileAnswers.buffer==="half"?"high":"long"]||""}</p><p>${cashMap[profileAnswers.buffer==="short"?"zero":profileAnswers.buffer==="few"?"small":profileAnswers.buffer==="half"?"medium":"large"]||""}</p>${profileAnswers.text?`<p><strong>你提到的职业顾虑：</strong>${escapeHtml(profileAnswers.text)}</p>`:""}</div>
+  <div class="section"><h3>你目前的现实起点</h3><ul>${assetDetails.map(x=>`<li><strong>${escapeHtml(x[0])}：</strong>${escapeHtml(x[1])}</li>`).join("")}</ul></div>
+  <div class="section"><div class="notice"><strong>最后提醒</strong><br>这份评估只是帮你把这个方向看得更具体一些，不代表你一定适合或一定不适合。真正决定它是不是你的路，还是要靠实际接触之后的感受，以及现实中的工作机会来判断。</div></div>`;
+ document.getElementById("modal").classList.remove("hidden");
+}
+
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function closeModal(){document.getElementById("modal").classList.add("hidden")}
+</script>
+</body>
+</html>
